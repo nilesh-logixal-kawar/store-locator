@@ -1,113 +1,190 @@
-import Image from 'next/image'
+"use client";
+
+import { useEffect, useState } from "react";
+import { Loader } from "@googlemaps/js-api-loader";
 
 export default function Home() {
+  const [map, setMap] = useState(null);
+  const [infoWindow, setInfoWindow] = useState(null);
+  const [selectedMarker, setSelectedMarker] = useState(null);
+  const [stores, setStores] = useState([]);
+  const [autocomplete, setAutocomplete] = useState(null);
+
+  useEffect(() => {
+    const loader = new Loader({
+      apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+      version: "weekly",
+      libraries: ["places"],
+    });
+
+    loader.load().then(() => {
+      const google = window.google;
+
+      const mapInstance = new google.maps.Map(
+        document.getElementById("google-map"),
+        {
+          zoom: 3,
+          center: { lat: 20, lng: 0 },
+        }
+      );
+
+      setMap(mapInstance);
+      setInfoWindow(new google.maps.InfoWindow());
+
+      fetch("/stores.json")
+        .then((response) => response.json())
+        .then((data) => {
+          setStores(data.features);
+          data.features.forEach((store) => {
+            const { coordinates } = store.geometry;
+            const lat = coordinates[1];
+            const lng = coordinates[0];
+            const storeName = store.properties.name;
+            const storeDescription = store.properties.description;
+            const storeTiming = store.properties.timing;
+
+            const marker = new google.maps.Marker({
+              position: { lat, lng },
+              map: mapInstance,
+              title: storeName,
+            });
+
+            marker.addListener("click", () => {
+              handleMarkerClick(
+                marker,
+                storeName,
+                storeTiming,
+                storeDescription,
+                lat,
+                lng
+              );
+            });
+
+            store.marker = marker;
+            store.lat = lat;
+            store.lng = lng;
+          });
+        });
+
+      const autocompleteInstance = new google.maps.places.Autocomplete(
+        document.getElementById("search-bar")
+      );
+      autocompleteInstance.addListener("place_changed", () => {
+        const place = autocompleteInstance.getPlace();
+        if (place.geometry) {
+          mapInstance.panTo(place.geometry.location);
+          mapInstance.setZoom(15);
+        }
+      });
+      setAutocomplete(autocompleteInstance);
+    });
+  }, []);
+
+  const handleMarkerClick = (
+    marker,
+    storeName,
+    storeDescription,
+    storeTiming,
+    lat,
+    lng
+  ) => {
+    if (map) {
+      const targetLatLng = new google.maps.LatLng(lat, lng);
+      map.panTo(targetLatLng);
+      console.log("cc");
+      const content = `
+        <div class="info-window m-2">
+          <h3 class="font-bold text-lg">${storeName}</h3>
+          <p class="italic mb-2">${storeDescription}</p>
+          <p class="font-medium">${storeTiming}</p>
+        </div>`;
+
+      infoWindow.setContent(content);
+      infoWindow.open(map, marker);
+    } else {
+      console.log("map instance not initialized");
+    }
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
+    <div className="md:h-screen md:overflow-hidden">
+      {/* Navbr Starts  */}
+      <nav className="flex items-center justify-between flex-wrap bg-white p-6 shadow-md sticky">
+        <div className="flex items-center flex-shrink-0  mr-6">
+          <span className="font-semibold text-xl tracking-tight">
+            📍 Storelocator
+          </span>
+        </div>
+        <div>
           <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
+            className="inline-block text-sm px-4 py-2 leading-none border rounded text-orange-500 border-orange-500 hover:border-transparent hover:text-white hover:bg-black mt-4 lg:mt-0"
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
+            Sign In
           </a>
         </div>
+      </nav>
+      {/* Navbr Ends  */}
+
+      {/* Store Locator Starts  */}
+      <div className="bg-gray-100 h-screen">
+        <div className=" py-7 text-center">
+          <h3 className="text-2xl font-extrabold">
+            📌 Store Locator - Find Store near you
+          </h3>
+        </div>
+        <div className=" flex md:flex h-screen">
+          <div className="w-full md:w-[30%] bg-gray-100 p-4 h-[73%] overflow-auto">
+            <div className="mb-4 ">
+              <input
+                id="search-bar"
+                type="text"
+                placeholder="Find a Store"
+                className="w-full px-3 py-3 border rounded shadow-md "
+              />
+            </div>
+            <ul className="space-y-4">
+              {stores.map((store) => (
+                <li
+                  key={store.properties.name}
+                  onClick={() => {
+                    handleMarkerClick(
+                      store.marker,
+                      store.properties.name,
+                      store.properties.description,
+                      store.properties.timing,
+                      store.lat,
+                      store.lng
+                    );
+                  }}
+                  className="cursor-pointer hover:bg-gray-200 p-2 rounded bg-white border-2 hover:border-orange-500 delay-75"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-lg font-semibold">
+                        {store.properties.name}
+                      </h2>
+                      <p className="text-sm font-medium my-2">
+                        Timing:{" "}
+                        <span className="font-normal">
+                          {store.properties.timing}
+                        </span>
+                      </p>
+                    </div>
+                    <button className="mr-5 text-xs font-semibold bg-orange-500 px-2 py-1 rounded-md">
+                      Direction
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="w-full md:w-[70%] order-first md:order-last">
+            <div id="google-map" className="w-full h-[73%]"></div>
+          </div>
+        </div>
       </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+      {/* Store Locator Ends  */}
+    </div>
+  );
 }

@@ -1,0 +1,174 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-74.005974, 40.712776]
+      },
+      "properties": {
+        "name": "Fashion Emporium",
+        "timing": "9:00 AM - 6:00 PM",
+        "description": "A trendy store in New York",
+        "country": "US"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-118.243683, 34.052235]
+      },
+      "properties": {
+        "name": "Urban Outfits",
+        "timing": "10:00 AM - 7:00 PM",
+        "description": "A popular shop in Los Angeles",
+        "country": "US"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-87.629798, 41.878113]
+      },
+      "properties": {
+        "name": "Windy City Outfitters",
+        "timing": "9:30 AM - 7:30 PM",
+        "description": "A cozy store in Chicago",
+        "country": "US"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-73.935242, 40.712776]
+      },
+      "properties": {
+        "name": "Brooklyn Boutique",
+        "timing": "11:00 AM - 7:00 PM",
+        "description": "A unique store in Brooklyn",
+        "country": "US"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-118.448669, 34.189857]
+      },
+      "properties": {
+        "name": "Seaside Fashion",
+        "timing": "10:30 AM - 8:30 PM",
+        "description": "A trendy store in Santa Monica",
+        "country": "US"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [77.209021, 28.613939]
+      },
+      "properties": {
+        "name": "Delhi Emporium",
+        "timing": "10:30 AM - 8:00 PM",
+        "description": "A well-known shop in New Delhi",
+        "country": "India"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [72.877656, 19.075984]
+      },
+      "properties": {
+        "name": "Mumbai Fashion Hub",
+        "timing": "10:00 AM - 6:30 PM",
+        "description": "A vibrant shop in Mumbai",
+        "country": "India"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [77.5913, 12.971599]
+      },
+      "properties": {
+        "name": "Bengaluru Treasures",
+        "timing": "9:00 AM - 6:30 PM",
+        "description": "A popular shop in Bangalore",
+        "country": "India"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [139.691706, 35.689487]
+      },
+      "properties": {
+        "name": "Traditions & More",
+        "timing": "8:00 AM - 5:00 PM",
+        "description": "A traditional store in Tokyo",
+        "country": "Japan"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [144.946014, -37.813628]
+      },
+      "properties": {
+        "name": "Melbourne Emporium",
+        "timing": "9:00 AM - 6:00 PM",
+        "description": "A chic store in Melbourne",
+        "country": "Australia"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-0.128, 51.507222]
+      },
+      "properties": {
+        "name": "London Styles",
+        "timing": "10:00 AM - 7:00 PM",
+        "description": "A stylish shop in London",
+        "country": "UK"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [31.235712, 30.04442]
+      },
+      "properties": {
+        "name": "Cairo Fashions",
+        "timing": "9:30 AM - 7:30 PM",
+        "description": "A vibrant store in Cairo",
+        "country": "Egypt"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [37.6173, 55.755825]
+      },
+      "properties": {
+        "name": "Moscow Trends",
+        "timing": "10:30 AM - 8:30 PM",
+        "description": "A modern shop in Moscow",
+        "country": "Russia"
+      }
+    }
+  ]
+}
