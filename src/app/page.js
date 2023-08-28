@@ -80,7 +80,7 @@ export default function Home() {
     });
   }, []);
 
-  const handleMarkerClick = (
+  const handleMarkerClick = async (
     marker,
     storeName,
     storeDescription,
@@ -91,7 +91,6 @@ export default function Home() {
     if (map) {
       const targetLatLng = new google.maps.LatLng(lat, lng);
       map.panTo(targetLatLng);
-      console.log("cc");
       const content = `
         <div class="info-window m-2">
           <h3 class="font-bold text-lg">${storeName}</h3>
@@ -102,7 +101,7 @@ export default function Home() {
       infoWindow.setContent(content);
       infoWindow.open(map, marker);
     } else {
-      console.log("map instance not initialized");
+      console.log("map instance not initialized", map);
     }
   };
 
@@ -171,9 +170,9 @@ export default function Home() {
                         </span>
                       </p>
                     </div>
-                    <button className="mr-5 text-xs font-semibold bg-orange-500 px-2 py-1 rounded-md">
-                      Direction
-                    </button>
+                    <div className="mr-5 text-xs font-semibold bg-green-300 px-2 py-1 rounded-md">
+                      Open Now
+                    </div>
                   </div>
                 </li>
               ))}
